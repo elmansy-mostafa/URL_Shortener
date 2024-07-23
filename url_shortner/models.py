@@ -4,6 +4,6 @@ metadata = MetaData()
 urls = Table(
     "urls",
     metadata,
-    column("key", String, primary_key=True, index=True)
-    column("long_url", String, unique=True)
-)
+    column("key", String, primary_key=True, index=True),
+    column("long_url", String, unique=True),
+        )
