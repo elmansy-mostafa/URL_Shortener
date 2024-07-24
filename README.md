@@ -1,10 +1,10 @@
 # URL_Shortener (2024)
 
-### Overview 
+## Overview 
 
 This project is a URL shortening service built using FastAPI, a modern, fast web framework for building APIs with Python. The service allows users to shorten long URLs into shorter, more manageable ones and provides endpoints to redirect, delete, and retrieve these URLs.
 
-### Features 
+## Features 
 
 1. URL Shortening:
    - Users can submit a long URL to be shortened.
@@ -26,7 +26,7 @@ This project is a URL shortening service built using FastAPI, a modern, fast web
 5. Error Handling:
    - Custom exception handling for HTTP errors, providing clear and concise error messages.
 
-### API Endpoints
+## API Endpoints
 
 1. POST /shorten-url/:
    - Endpoint to shorten a long URL.
@@ -44,7 +44,7 @@ This project is a URL shortening service built using FastAPI, a modern, fast web
    - Returns a success message upon deletion.
 
 
-### Project Setup and Dependencies
+## Project Setup and Dependencies
 
 - FastAPI: For building the API.
 - SQLAlchemy: For database interaction.
