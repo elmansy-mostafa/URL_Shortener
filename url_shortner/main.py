@@ -1,8 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from fastapi.responses import JSONResponse, RedirectResponse
 import hashlib
-from sqlalchemy import Select
+from sqlalchemy.sql import select, delete
 from schemas import URLBAse, URLResponse
 from database import database, urls, metadata, engine
 
@@ -22,9 +21,9 @@ def generate_key(url : str) -> str:
     return hashlib.sha256(url.encode()).hexdigest()[:6]
 
 # create our ending point of api
-@app.post("/", response_model=URLResponse)
+@app.post("/shorten_url/", response_model=URLResponse)
 async def create_url(url_data:URLBAse):
-    query = Select(urls).where(urls.c.long_url==url_data.url)
+    query = select(urls).where(urls.c.long_url==url_data.url)
     existing_url = await database.fetch_one(query)
 
     if existing_url:
@@ -42,7 +41,26 @@ async def create_url(url_data:URLBAse):
         long_url = url_data.url,
         short_url = f"http://localhost/{key}"
     )
+
+@app.get("/{key}", response_class=RedirectResponse)
+async def redirect_to_url(key:str):
+    query = select(urls).where(urls.c.key == key )
+    url_record = await database.fetch_one(query)
+    if url_record:
+        return RedirectResponse(url = url_record["long_url"], status_code=302)
+    else:
+        raise HTTPException(status_code=404, detail="URL not found")    
     
+@app.delete("/{key}")
+async def delete_url(key:str):
+    query = select(urls).where(urls.c.key == key)
+    url_record = await database.fetch_one(query)
+    if url_record:
+        delete_query = delete(urls).where(urls.c.key == key)
+        await database.execute(delete_query)
+    return JSONResponse(status_code=200, content={})
+
+
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request:Request, exc:HTTPException):
     return JSONResponse(status_code=exc.status_code, content={"message":exc.detail})
